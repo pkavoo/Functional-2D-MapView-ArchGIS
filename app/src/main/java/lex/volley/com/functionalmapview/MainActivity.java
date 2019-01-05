@@ -35,6 +35,7 @@ import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     private MapView mv;
@@ -241,6 +242,30 @@ public class MainActivity extends AppCompatActivity {
         final LocatorTask geoCodeServer = new LocatorTask(getString(R.string.geoCode_server));
         final ListenableFuture<List<GeocodeResult>> geoCodeFuture =
                 geoCodeServer.geocodeAsync(myQuery);
+        geoCodeFuture.addDoneListener(new Runnable() {
+            @Override
+            public void run() {
+                try {
+//retrieve the geocoding results
+                    List<GeocodeResult> geocodeResults = geoCodeFuture.get();
+                    if (geocodeResults != null) {
+//Use the first result candidate
+                        GeocodeResult firstCandidate = geocodeResults.get(0);
+                        Double x = firstCandidate.getDisplayLocation().getX();
+                        Double y = firstCandidate.getDisplayLocation().getY();
+                        Viewpoint myViewpoint = new Viewpoint(y,x,50000);
+                        mv.setViewpointAsync(myViewpoint);
+                        Toast.makeText(getApplicationContext(),firstCandidate.getLabel(),Toast.LENGTH_LONG).show();
+                    }
+                }
+                catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.geocoding_error),
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 }
 

@@ -7,4 +7,5 @@
     <string name="long_beach">Long Beach</string>
     <string name="katelembu">katelembu</string>
     <string name="geoCode_server">"http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"</string>
+    <string name="geocoding_error">Failed to find the address</string>
 </resources>
