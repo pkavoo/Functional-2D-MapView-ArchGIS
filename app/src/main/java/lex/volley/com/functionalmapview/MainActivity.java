@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
@@ -28,7 +29,10 @@ import com.esri.arcgisruntime.mapping.BookmarkList;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.Callout;
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
+import com.esri.arcgisruntime.mapping.view.Graphic;
+import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
 
@@ -240,8 +244,8 @@ public class MainActivity extends AppCompatActivity {
     private void searchNewPlace(){
 //create a geocoding task using online service
         final LocatorTask geoCodeServer = new LocatorTask(getString(R.string.geoCode_server));
-        final ListenableFuture<List<GeocodeResult>> geoCodeFuture =
-                geoCodeServer.geocodeAsync(myQuery);
+        final ListenableFuture<List<GeocodeResult>> geoCodeFuture = geoCodeServer.geocodeAsync(myQuery);
+
         geoCodeFuture.addDoneListener(new Runnable() {
             @Override
             public void run() {
@@ -255,6 +259,15 @@ public class MainActivity extends AppCompatActivity {
                         Double y = firstCandidate.getDisplayLocation().getY();
                         Viewpoint myViewpoint = new Viewpoint(y,x,50000);
                         mv.setViewpointAsync(myViewpoint);
+
+                        Point pt = new Point(x,y, SpatialReference.create(4326));
+                        SimpleMarkerSymbol mySymbol = new
+                                SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.RED,18);
+                        Graphic myGraphic = new Graphic(pt,mySymbol);
+                        GraphicsOverlay myGraphicsOverlay = new GraphicsOverlay();
+                        myGraphicsOverlay.getGraphics().add(myGraphic);
+                        mv.getGraphicsOverlays().add(myGraphicsOverlay);
+
                         Toast.makeText(getApplicationContext(),firstCandidate.getLabel(),Toast.LENGTH_LONG).show();
                     }
                 }
