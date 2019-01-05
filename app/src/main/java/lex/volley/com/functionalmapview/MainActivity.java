@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
@@ -28,7 +29,11 @@ import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.Callout;
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
+import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -50,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList myBookmarksList;
     private Callout myCallout;
     private Viewpoint homeViewpoint;
+    private String myQuery;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,6 +150,21 @@ public class MainActivity extends AppCompatActivity {
         searchView.setSearchableInfo(searchMgr.getSearchableInfo(getComponentName()));
 //display the submit button
         searchView.setSubmitButtonEnabled(true);
+
+        //setting on click listener on the search button
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                myQuery = query;
+                Toast.makeText(MainActivity.this, "You are searching: "+ myQuery, Toast.LENGTH_LONG).show();
+         searchNewPlace();
+                return true;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
         return true;
     }
 
@@ -213,5 +234,13 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Back to Home Viewpoint!", Toast.LENGTH_LONG).show();
         }
     };
+
+    //search method
+    private void searchNewPlace(){
+//create a geocoding task using online service
+        final LocatorTask geoCodeServer = new LocatorTask(getString(R.string.geoCode_server));
+        final ListenableFuture<List<GeocodeResult>> geoCodeFuture =
+                geoCodeServer.geocodeAsync(myQuery);
+    }
 }
 

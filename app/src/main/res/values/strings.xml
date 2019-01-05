@@ -6,5 +6,5 @@
     <string name="san_jose">San Jose</string>
     <string name="long_beach">Long Beach</string>
     <string name="katelembu">katelembu</string>
-
+    <string name="geoCode_server">"http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"</string>
 </resources>
