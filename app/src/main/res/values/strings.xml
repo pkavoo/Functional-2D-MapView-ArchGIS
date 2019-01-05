@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Functional MapView</string>
+    <!-- bookmark names -->
+    <string name="san_francisco">San Francisco</string>
+    <string name="treasure_island">Treasure Island</string>
+    <string name="san_jose">San Jose</string>
+    <string name="long_beach">Long Beach</string>
+    <string name="katelembu">katelembu</string>
+
+</resources>
